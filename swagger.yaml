@@ -1,0 +1,710 @@
+openapi: 3.0.3
+info:
+  title: Notes API - OpenAPI 3.0
+  version: 1.0.1
+  description: |-
+    This is a sample services based on the OpenAPI 3.0 specification. You can make short notes(404 symbols)
+tags:
+  - name: user
+    description: Operations about user
+  - name: notes
+    description: Operations about note
+  - name: tag
+    description: Operations about tag
+paths:
+  /user:
+    post:
+      tags:
+        - user
+      summary: Create user
+      description: This can only be done by the logged in user.
+      operationId: createUser
+      requestBody:
+        description: Created user object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        default:
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/User'
+      security:
+        - note_auth:
+          - admin
+          - user
+  /user/createWithList:
+    post:
+      tags:
+        - user
+      summary: Creates list of users with given input array
+      description: Creates list of users with given input array
+      operationId: createUsersWithListInput
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/User'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/User'
+        default:
+          description: successful operation
+      security:
+        - note_auth:
+            - admin
+  /user/login:
+    get:
+      tags:
+        - user
+      summary: Logs user into the system
+      description: ''
+      operationId: loginUser
+      parameters:
+        - name: username
+          in: query
+          description: The user name for login
+          required: false
+          schema:
+            type: string
+          example: theUser
+        - name: password
+          in: query
+          description: The password for login in clear text
+          required: false
+          schema:
+            type: string
+          example: '12345'
+      responses:
+        '200':
+          description: successful operation
+          headers:
+            X-Rate-Limit:
+              description: calls per hour allowed by the user
+              schema:
+                type: integer
+                format: int32
+            X-Expires-After:
+              description: date in UTC when token expires
+              schema:
+                type: string
+                format: date-time
+          content:
+            application/xml:
+              schema:
+                type: string
+            application/json:
+              schema:
+                type: string
+        '400':
+          description: Invalid username/password supplied
+      security:
+        - note_auth:
+          - admin
+          - user
+  /user/logout:
+    get:
+      tags:
+        - user
+      summary: Logs out current logged in user session
+      description: ''
+      operationId: logoutUser
+      parameters: []
+      responses:
+        default:
+          description: successful operation
+  /user/{username}:
+    get:
+      tags:
+        - user
+      summary: Get user by user name
+      description: ''
+      operationId: getUserByName
+      parameters:
+        - name: username
+          in: path
+          description: 'The name that needs to be fetched. Use user1 for testing. '
+          required: true
+          schema:
+            type: string
+          example: theUser
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid username supplied
+        '404':
+          description: User not found
+        default:
+          description: Unknown error
+      security:
+        - note_auth:
+          - admin
+          - user
+    put:
+      tags:
+        - user
+      summary: Update user
+      description: This can only be done by the logged in user.
+      operationId: updateUser
+      parameters:
+        - name: username
+          in: path
+          description: name that need to be deleted
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Update an existent user in the store
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/User'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/User'
+      responses:
+        default:
+          description: successful operation
+      security:
+        - note_auth:
+          - admin
+          - user
+    delete:
+      tags:
+        - user
+      summary: Delete user
+      description: This can only be done by the logged in user.
+      operationId: deleteUser
+      parameters:
+        - name: username
+          in: path
+          description: The name that needs to be deleted
+          required: true
+          schema:
+            type: string
+      responses:
+        '400':
+          description: Invalid username supplied
+        '404':
+          description: User not found
+      security:
+        - note_auth:
+          - admin
+          - user
+  /user/stat/{userId}:
+    get:
+      tags:
+        - user
+      summary: Get user stats by user id
+      description: ''
+      operationId: getStatsById
+      parameters:
+        - name: userId
+          in: path
+          description: 'The name that needs to be fetched. Use 10 for testing. '
+          required: true
+          schema:
+            type: string
+          example: theUser
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Stats'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Stats'
+        '400':
+          description: Invalid user id supplied
+        '404':
+          description: Stats for user not found
+        default:
+          description: Unknown error
+      security:
+        - note_auth:
+          - admin
+          - user
+    put:
+      tags:
+        - user
+      summary: Update stats
+      description: This can only be done by admin.
+      operationId: updateUserStats
+      parameters:
+        - name: userId
+          in: path
+          description: name that need to be deleted
+          required: true
+          schema:
+            type: string
+      requestBody:
+        description: Update an existent user in the store
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Stats'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Stats'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Stats'
+      responses:
+        default:
+          description: successful operation
+      security:
+        - note_auth:
+          - admin
+
+  /notes:
+    post:
+      tags:
+        - notes
+      summary: Create note
+      description: This can only be done by the logged in user.
+      operationId: createNote
+      requestBody:
+        description: Created note object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Notes'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Notes'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Notes'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notes'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Notes'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notes'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Notes'
+        default:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notes'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Notes'
+      security:
+        - note_auth:
+          - admin
+          - user
+  /notes/{id}:
+    get:
+      tags:
+        - notes
+      summary: Get note by id
+      description: ''
+      operationId: getNoteById
+      parameters:
+        - name: id
+          in: path
+          description: 'The name that needs to be fetched. Use 1 for testing. '
+          required: true
+          schema:
+            type: integer
+          example: 1
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notes'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Notes'
+        '400':
+          description: Invalid id supplied
+        '404':
+          description: Note not found
+        default:
+          description: Unknown error
+      security:
+        - note_auth:
+          - admin
+          - user
+    put:
+      tags:
+        - notes
+      summary: Update note
+      description: This can only be done by the logged in user.
+      operationId: updateNotes
+      parameters:
+        - name: id
+          in: path
+          description: id that need to be deleted
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: Update an existent note
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Notes'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Notes'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Notes'
+      responses:
+        default:
+          description: successful operation
+      security:
+        - note_auth:
+          - admin
+          - user
+    delete:
+      tags:
+        - notes
+      summary: Delete note
+      description: This can only be done by the logged in user.
+      operationId: deleteNotes
+      parameters:
+        - name: id
+          in: path
+          description: The id that needs to be deleted
+          required: true
+          schema:
+            type: integer
+      responses:
+        '400':
+          description: Invalid id supplied
+        '404':
+          description: Note not found
+      security:
+        - note_auth:
+          - admin
+          - user
+
+  /tag:
+    post:
+      tags:
+        - tag
+      summary: Create tag
+      description: This can only be done by the logged in user.
+      operationId: createTag
+      requestBody:
+        description: Created tag object
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Tag'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Tag'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Tag'
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tag'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Tag'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tag'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Tag'
+        default:
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tag'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Tag'
+      security:
+        - note_auth:
+          - admin
+          - user
+  /tag/{id}:
+    get:
+      tags:
+        - tag
+      summary: Get tag by id
+      description: ''
+      operationId: getTagById
+      parameters:
+        - name: id
+          in: path
+          description: 'The name that needs to be fetched. Use 1 for testing. '
+          required: true
+          schema:
+            type: integer
+          example: 1
+      responses:
+        '200':
+          description: successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tag'
+            application/xml:
+              schema:
+                $ref: '#/components/schemas/Tag'
+        '400':
+          description: Invalid id supplied
+        '404':
+          description: Note not found
+        default:
+          description: Unknown error
+      security:
+        - note_auth:
+          - admin
+          - user
+    put:
+      tags:
+        - tag
+      summary: Update tag
+      description: This can only be done by the logged in user.
+      operationId: updateTag
+      parameters:
+        - name: id
+          in: path
+          description: id that need to be deleted
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        description: Update an existent note
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Tag'
+          application/xml:
+            schema:
+              $ref: '#/components/schemas/Tag'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/Tag'
+      responses:
+        default:
+          description: successful operation
+      security:
+        - note_auth:
+          - admin
+    delete:
+      tags:
+        - tag
+      summary: Delete tag
+      description: This can only be done by the logged in user.
+      operationId: deleteTag
+      parameters:
+        - name: id
+          in: path
+          description: The id that needs to be deleted
+          required: true
+          schema:
+            type: integer
+      responses:
+        '400':
+          description: Invalid id supplied
+        '404':
+          description: Note not found
+      security:
+        - note_auth:
+          - admin
+
+components:
+  schemas:
+    User:
+      type: object
+      required:
+        - id
+        - username
+        - password
+        - email
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 6
+        username:
+          type: string
+          example: theUser
+        firstName:
+          type: string
+          example: John
+        lastName:
+          type: string
+          example: James
+        email:
+          type: string
+          example: john@email.com
+        password:
+          type: string
+          example: '12345'
+        phone:
+          type: string
+          example: '12345'
+        userStatus:
+          type: string
+          enum:
+            - online
+            - offline
+        notes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Notes'
+        stats:
+          $ref: '#/components/schemas/Stats'
+      xml:
+        name: user
+    Notes:
+      type: object
+      required:
+        - id
+        - ownerId
+        - isPublic
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        ownerId:
+          type: integer
+          format: int64
+          example: 2
+        title:
+          type: string
+          example: 'My title'
+        isPublic:
+          type: boolean
+          example: true
+        text:
+          type: string
+          example: 'Today i was in Lviv. It was great!'
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tag'
+        authors:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+        dateOfEditing:
+          type: array
+          items:
+            type: string
+            format: date
+            example: '2022-10-02'
+      xml:
+        name: notes
+    Tag:
+      type: object
+      required:
+        - id
+        - text
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 3
+        text:
+          type: string
+          example: '#lviv'
+        presence:
+          type: boolean
+          example: true
+      xml:
+        name: tag
+    Stats:
+      type: object
+      required:
+        - userId
+      properties:
+        userId:
+          type: integer
+          format: int64
+          example: 10
+        numOfNotes:
+          type: integer
+          format: int64
+          example: 9
+  requestBodies:
+    UserArray:
+      description: List of user object
+      content:
+        application/json:
+          schema:
+            type: array
+            items:
+              $ref: '#/components/schemas/User'
+  securitySchemes:
+    note_auth:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: url
+          scopes:
+            admin : can do all actions
+            user : can do only allowed action
+    api_key:
+      type: apiKey
+      name: api_key
+      in: header
