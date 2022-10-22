@@ -726,9 +726,6 @@ components:
         text:
           type: string
           example: '#lviv'
-        presence:
-          type: boolean
-          example: true
       xml:
         name: tag
     TagUpdate:
@@ -739,9 +736,6 @@ components:
         text:
           type: string
           example: '#lviv'
-        presence:
-          type: boolean
-          example: true
       xml:
         name: tagUpdate
     Stats:
