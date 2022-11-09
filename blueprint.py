@@ -1,6 +1,6 @@
 from flask import Blueprint
 
-api_blueprint = Blueprint('api', __name__)
+api_blueprint = Blueprint('api', __name__, url_prefix='/start')
 STUDENT_ID = 2
 
 @api_blueprint.route("/hello-world")

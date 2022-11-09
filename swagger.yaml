@@ -32,45 +32,13 @@ paths:
             schema:
               $ref: '#/components/schemas/UserCreate'
       responses:
-        default:
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserInfo'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/UserInfo'
-
-  /user/createWithList:
-    post:
-      tags:
-        - user
-      summary: Creates list of users with given input array
-      description: Creates list of users with given input array
-      operationId: createUsersWithListInput
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: array
-              items:
-                $ref: '#/components/schemas/UserCreate'
-      responses:
         '200':
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/UserCreate'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/UserCreate'
-        default:
-          description: successful operation
-      security:
-        - note_auth:
-            - admin
+          description: New user was successfully created!
+        '400':
+          description: The username is used by other user
+        '404':
+          description: The email is used by other user
+  
   /user/login:
     get:
       tags:
@@ -128,21 +96,21 @@ paths:
       responses:
         default:
           description: successful operation
-  /user/{username}:
+  /user/{user_id}:
     get:
       tags:
         - user
-      summary: Get user by user name
+      summary: Get user by user id
       description: ''
-      operationId: getUserByName
+      operationId: getUserByid
       parameters:
-        - name: username
+        - name: user_id
           in: path
           description: 'The name that needs to be fetched. Use user1 for testing. '
           required: true
           schema:
             type: string
-          example: theUser
+          example: 1
       responses:
         '200':
           description: successful operation
@@ -154,11 +122,9 @@ paths:
               schema:
                 $ref: '#/components/schemas/UserInfo'
         '400':
-          description: Invalid username supplied
+          description: Invalid user_id supplied
         '404':
           description: User not found
-        default:
-          description: Unknown error
       security:
         - note_auth:
           - admin
@@ -170,9 +136,9 @@ paths:
       description: This can only be done by the logged in user.
       operationId: updateUser
       parameters:
-        - name: username
+        - name: user_id
           in: path
-          description: name that need to be deleted
+          description: user that need to be updated
           required: true
           schema:
             type: string
@@ -189,8 +155,12 @@ paths:
             schema:
               $ref: '#/components/schemas/UserUpdate'
       responses:
-        default:
+        '200':
           description: successful operation
+        '400':
+          description: User with such username already exists.
+        '404':
+          description: User with such email already exists.
       security:
         - note_auth:
           - admin
@@ -202,52 +172,19 @@ paths:
       description: This can only be done by the logged in user.
       operationId: deleteUser
       parameters:
-        - name: username
+        - name: user_id
           in: path
           description: The name that needs to be deleted
           required: true
           schema:
             type: string
       responses:
-        '400':
-          description: Invalid username supplied
-        '404':
-          description: User not found
-      security:
-        - note_auth:
-          - admin
-          - user
-  /user/stat/{userId}:
-    get:
-      tags:
-        - user
-      summary: Get user stats by user id
-      description: ''
-      operationId: getStatsById
-      parameters:
-        - name: userId
-          in: path
-          description: 'The name that needs to be fetched. Use 10 for testing. '
-          required: true
-          schema:
-            type: string
-          example: theUser
-      responses:
         '200':
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Stats'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/Stats'
+          description: User was deleted.
         '400':
-          description: Invalid user id supplied
+          description: Invalid user_id supplied
         '404':
-          description: Stats for user not found
-        default:
-          description: Unknown error
+          description: An user with provided ID was not found.
       security:
         - note_auth:
           - admin
@@ -265,46 +202,25 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Notes'
+              $ref: '#/components/schemas/NotesCreate'
           application/xml:
             schema:
-              $ref: '#/components/schemas/Notes'
+              $ref: '#/components/schemas/NotesCreate'
           application/x-www-form-urlencoded:
             schema:
-              $ref: '#/components/schemas/Notes'
+              $ref: '#/components/schemas/NotesCreate'
       responses:
         '200':
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Notes'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/Notes'
+          description: Note was added successfully
         '400':
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Notes'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/Notes'
-        default:
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Notes'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/Notes'
+          description: This title has already exist.
+        '404':
+          description: Can't use the same tag again
       security:
         - note_auth:
           - admin
           - user
-  /notes/{id}:
+  /notes/{note_id}:
     get:
       tags:
         - notes
@@ -312,7 +228,7 @@ paths:
       description: ''
       operationId: getNoteById
       parameters:
-        - name: id
+        - name: note_id
           in: path
           description: 'The name that needs to be fetched. Use 1 for testing. '
           required: true
@@ -325,16 +241,12 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Notes'
+                $ref: '#/components/schemas/NoteInfo'
             application/xml:
               schema:
-                $ref: '#/components/schemas/Notes'
-        '400':
-          description: Invalid id supplied
+                $ref: '#/components/schemas/NoteInfo'
         '404':
-          description: Note not found
-        default:
-          description: Unknown error
+          description: An Note with provided ID was not found.
       security:
         - note_auth:
           - admin
@@ -346,7 +258,7 @@ paths:
       description: This can only be done by the logged in user.
       operationId: updateNotes
       parameters:
-        - name: id
+        - name: note_id
           in: path
           description: id that need to be deleted
           required: true
@@ -365,8 +277,12 @@ paths:
             schema:
               $ref: '#/components/schemas/NotesUpdate'
       responses:
-        default:
-          description: successful operation
+        '200':
+          description: Note was updated successfully
+        '404':
+          description: An Note with provided ID was not found.
+        '400':
+          description: Note with such title already exists.
       security:
         - note_auth:
           - admin
@@ -379,15 +295,15 @@ paths:
       description: This can only be done by the logged in user.
       operationId: deleteNotes
       parameters:
-        - name: id
+        - name: note_id
           in: path
           description: The id that needs to be deleted
           required: true
           schema:
             type: integer
       responses:
-        '400':
-          description: Invalid id supplied
+        '200':
+          description: Note was deleted.
         '404':
           description: Note not found
       security:
@@ -416,32 +332,11 @@ paths:
               $ref: '#/components/schemas/Tag'
       responses:
         '200':
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Tag'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/Tag'
+          description: New tag was successfully created!
         '400':
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Tag'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/Tag'
-        default:
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Tag'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/Tag'
+          description: Tag with such name already exists
+        '500':
+          description: Invalid data
       security:
         - note_auth:
           - admin
@@ -475,8 +370,6 @@ paths:
           description: Invalid id supplied
         '404':
           description: Note not found
-        default:
-          description: Unknown error
       security:
         - note_auth:
           - admin
@@ -507,8 +400,13 @@ paths:
             schema:
               $ref: '#/components/schemas/Tag'
       responses:
-        default:
-          description: successful operation
+        '200':
+          description: The tag was successfully updated
+        '404':
+          description: An tag with provided ID was not found.
+        '400':
+          description: Tag with such number already exists
+          
       security:
         - note_auth:
           - admin
@@ -526,10 +424,10 @@ paths:
           schema:
             type: integer
       responses:
-        '400':
-          description: Invalid id supplied
+        '200':
+          description: Tag was deleted.
         '404':
-          description: Note not found
+          description: An tag with provided ID was not found.
       security:
         - note_auth:
           - admin
@@ -555,32 +453,11 @@ paths:
               $ref: '#/components/schemas/allowedNote'
       responses:
         '200':
-          description: successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Notes'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/Notes'
+          description: New editor was added.
         '400':
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Notes'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/Notes'
-        default:
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Notes'
-            application/xml:
-              schema:
-                $ref: '#/components/schemas/Notes'
+          description: An Note with provided ID was not found.
+        '404':
+          description: An User with provided ID was not found.
       security:
         - note_auth:
           - admin
@@ -591,36 +468,36 @@ components:
     UserInfo:
       type: object
       required:
-      - id
       - email
       properties:
-        id:
-          type: integer
-          format: int64
-          example: 1
-        username:
-          type: string
-          example: theUser
-        email:
-          type: string
-          example: ivan@email.com
         firstName:
           type: string
           example: Ivan
         lastName:
           type: string
           example: James
-        userStatus:
+        username:
           type: string
-          enum:
-            - online
-            - offline
+          example: theUser
+        email:
+          type: string
+          example: ivan@email.com
+        numOfNotes:
+          type: integer
+          format: int64
+          example: 9
+        dateOfCreating:
+          type: string
+          format: date
+          example: '2022-10-02'
+        numOfEditingNotes:
+          type: integer
+          format: int64
+          example: 9
         notes:
           type: array
           items:
-            $ref: '#/components/schemas/Notes'
-        stats:
-          $ref: '#/components/schemas/Stats'
+            $ref: '#/components/schemas/NoteInfo'
     UserCreate:
       required:
       - email
@@ -628,16 +505,16 @@ components:
       - username
       type: object
       properties:
+        first_name:
+          type: string
+        last_name:
+          type: string
         username:
           type: string
           example: theUser
         email:
           type: string
         password:
-          type: string
-        first_name:
-          type: string
-        last_name:
           type: string
     UserUpdate:
       type: object
@@ -655,17 +532,13 @@ components:
           type: string
       xml:
         name: user
-    Notes:
+    NotesCreate:
       type: object
       required:
         - id
         - ownerId
         - isPublic
       properties:
-        id:
-          type: integer
-          format: int64
-          example: 10
         ownerId:
           type: integer
           format: int64
@@ -683,16 +556,49 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Tag'
-        authors:
-          type: array
-          items:
-            $ref: '#/components/schemas/UserInfo'
+        
+      xml:
+        name: notes
+    NoteInfo:
+      type: object
+      required:
+        - id
+        - ownerId
+        - isPublic
+      properties:
+        ownerId:
+          type: integer
+          format: int64
+          example: 2
+        title:
+          type: string
+          example: 'My title'
+        isPublic:
+          type: boolean
+          example: true
+        text:
+          type: string
+          example: 'Today i was in Lviv. It was great!'
         dateOfEditing:
+          type: string
+          format: date
+          example: '2022-10-02'  
+        tags:
           type: array
           items:
-            type: string
-            format: date
-            example: '2022-10-02'
+            $ref: '#/components/schemas/Tag'
+        editors:
+          type: array
+          items:
+              properties:
+                username:
+                  type: string
+                  example: theUser
+                email:
+                  type: string
+                  example: John@let.com
+            
+        
       xml:
         name: notes
     NotesUpdate:
@@ -710,73 +616,30 @@ components:
         tags:
           type: array
           items:
-            $ref: '#/components/schemas/TagUpdate'
+            $ref: '#/components/schemas/Tag'
       xml:
         name: notesUp
     Tag:
       type: object
       required:
-        - id
-        - text
+        - name
       properties:
-        id:
-          type: integer
-          format: int64
-          example: 3
-        text:
+        name:
           type: string
           example: '#lviv'
       xml:
         name: tag
-    TagUpdate:
-      type: object
-      required:
-        - text
-      properties:
-        text:
-          type: string
-          example: '#lviv'
-      xml:
-        name: tagUpdate
-    Stats:
-      type: object
-      required:
-        - id
-        - userId
-      properties:
-        id:
-          type: integer
-          format: int64
-          example: 10
-        userId:
-          type: integer
-          format: int64
-          example: 10
-        numOfNotes:
-          type: integer
-          format: int64
-          example: 9
-        numOfEditingNotes:
-          type: integer
-          format: int64
-          example: 9
-        dateOfCreating:
-          type: string
-          format: date
-          example: '2022-10-02'
-      xml:
-        name: stats
     allowedNote:
       type: object
       properties:
-        noteId:
+        note_id:
           type: integer
           format: int64
-          example: 10
-        userId:
+          example: 1
+        user_id:
           type: integer
           format: int64
-          example: 10
+          example: 2
       xml:
         name: allowedNotes
   requestBodies:

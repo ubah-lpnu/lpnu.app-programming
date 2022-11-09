@@ -16,7 +16,9 @@ class Users(BaseModel):
     email = Column(String, nullable=False)
     first_name = Column(String, nullable=False)
     last_name = Column(String, nullable=False)
-    userstatus = Column(BOOLEAN, nullable=False)
+    numOfNotes = Column(Integer, nullable=False)
+    numOfEditingNotes = Column(Integer, nullable=False)
+    dateOfCreating = Column(DATE, nullable=False)
 
 
 class Notes(BaseModel):
@@ -25,9 +27,9 @@ class Notes(BaseModel):
     id = Column(Integer, Identity(start=1, cycle=False), primary_key=True, nullable=False)
     owner_id = Column(Integer, ForeignKey('users.id'), nullable=False)
     title = Column(String, nullable=False)
-    ispublic = Column(BOOLEAN, nullable=False)
+    isPublic = Column(BOOLEAN, nullable=False)
     text = Column(String, nullable=False)
-    dateofediting = Column(DATE, nullable=False)
+    dateOfEditing = Column(DATE, nullable=False)
 
     user = relationship(Users, foreign_keys=[owner_id], backref="notes", lazy="joined")
 
@@ -49,20 +51,9 @@ class TagNote(BaseModel):
     note = relationship(Notes, foreign_keys=[note_id], backref="TagNote", lazy="joined")
 
 
-class Stats(BaseModel):
-    __tablename__ = "stats"
 
-    id = Column(Integer, Identity(start=1, cycle=False), primary_key=True, nullable=False)
-    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
-    numofnotes = Column(Integer, nullable=False)
-    numofeditingnotes = Column(Integer, nullable=False)
-    dateofcreating = Column(DATE, nullable=False)
-
-    user = relationship(Users, foreign_keys=[user_id], backref="stats", lazy="joined")
-
-
-class AllowedNotes(BaseModel):
-    __tablename__ = "allowed_notes"
+class Editors(BaseModel):
+    __tablename__ = "editors"
 
     note_id = Column(Integer, ForeignKey('notes.id'), primary_key=True, nullable=False)
     user_id = Column(Integer, ForeignKey('users.id'), primary_key=True, nullable=False)
