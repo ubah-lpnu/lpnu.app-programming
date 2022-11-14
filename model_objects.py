@@ -2,13 +2,14 @@ from sqlalchemy import *
 from sqlalchemy.orm import declarative_base, relationship
 from sqlalchemy.orm import relationship, sessionmaker, scoped_session
 from sqlalchemy.orm import backref
-import datetime 
+import datetime
 
-engine = create_engine("postgresql://postgres:postgres22@localhost:5432/SysNotes")
+engine = create_engine("postgresql://postgres:30062003@localhost:5432/SysNotes")
 SessionFactory = sessionmaker(bind=engine)
 Session = scoped_session(SessionFactory)
 
 BaseModel = declarative_base()
+
 
 # tag_note = Table(
 #     "tag_note",
@@ -42,8 +43,8 @@ class Notes(BaseModel):
     text = Column(String(404), nullable=False)
     dateOfEditing = Column(DateTime)
 
-    #userKey = relationship(Users, foreign_keys=[owner_id], backref="notes", lazy="joined")
-    #userKey = relationship(Users, backref=backref('owner', cascade='all,delete'))
+    # userKey = relationship(Users, foreign_keys=[owner_id], backref="notes", lazy="joined")
+    # userKey = relationship(Users, backref=backref('owner', cascade='all,delete'))
     userKey = relationship(Users, backref=backref('owner', cascade='all,delete'))
 
 
@@ -63,9 +64,8 @@ class TagNote(BaseModel):
     tagKey = relationship(Tags, backref=backref('tags', cascade='all,delete'))
     NoteKey = relationship(Notes, backref=backref('notes', cascade='all,delete'))
 
-    #tagKey = relationship(Tags, foreign_keys=[tag_id], backref="TagNote", lazy="joined")
-    #NoteKey = relationship(Notes, foreign_keys=[note_id], backref="TagNote", lazy="joined")
-
+    # tagKey = relationship(Tags, foreign_keys=[tag_id], backref="TagNote", lazy="joined")
+    # NoteKey = relationship(Notes, foreign_keys=[note_id], backref="TagNote", lazy="joined")
 
 
 class Editors(BaseModel):
@@ -77,6 +77,5 @@ class Editors(BaseModel):
     userEdKey = relationship(Users, backref=backref('users_ed', cascade='all,delete'))
     noteEdKey = relationship(Notes, backref=backref('note_ed', cascade='all,delete'))
 
-
-    #userEdKey = relationship(Users, foreign_keys=[user_id], backref="allowedNotes", lazy="joined")
-    #noteEdKey = relationship(Notes, foreign_keys=[note_id], backref="allowedNotes", lazy="joined")
+    # userEdKey = relationship(Users, foreign_keys=[user_id], backref="allowedNotes", lazy="joined")
+    # noteEdKey = relationship(Notes, foreign_keys=[note_id], backref="allowedNotes", lazy="joined")

@@ -1,7 +1,7 @@
 from sqlalchemy import *
 from sqlalchemy.orm import declarative_base, sessionmaker, relationship
 
-engine = create_engine("postgresql://postgres:24062004@localhost:5432/toksim4")
+engine = create_engine("postgresql://postgres:30062003@localhost:5432/toksim4")
 Session = sessionmaker(bind=engine)
 
 BaseModel = declarative_base()
