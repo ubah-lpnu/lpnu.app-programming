@@ -1,4 +1,4 @@
-from models import *
+from to_test.models import *
 
 session = Session()
 

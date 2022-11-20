@@ -4,7 +4,9 @@ from sqlalchemy.orm import relationship, sessionmaker, scoped_session
 from sqlalchemy.orm import backref
 import datetime
 
-engine = create_engine("postgresql://postgres:30062003@localhost:5432/SysNotes")
+#engine = create_engine("postgresql://postgres:30062003@localhost:5432/SysNotes")
+engine = create_engine("postgresql://postgres:24062004@localhost:5432/notes")
+
 SessionFactory = sessionmaker(bind=engine)
 Session = scoped_session(SessionFactory)
 
