@@ -1,2 +1,8 @@
 /__pycache__
+/.idea
 tempCodeRunnerFile.py
+/to_test/__pycache__
+/to_test/pages/__pycache__
+/.coverage
+/to_test/unittests/__pycache__
+/pages/__pycache__

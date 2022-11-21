@@ -1,10 +1,10 @@
 from flask import Blueprint, Response, request, jsonify
 from marshmallow import ValidationError
 from flask_bcrypt import Bcrypt
-from noteProgect.model_objects import Session, Users, Notes, TagNote
-from noteProgect.validation_schemas import UserCreate, UserUpdate, UserInfo, NoteCreate, UserToLogin
+from to_test.model_objects import Session, Users, Notes
+from to_test.validation_schemas import UserCreate, UserUpdate, UserInfo, NoteCreate, UserToLogin
 from flask_jwt_extended import (
-    JWTManager, jwt_required, create_access_token,
+    jwt_required, create_access_token,
     get_jwt_identity
 )
 
@@ -90,7 +90,7 @@ def delete_user(user_id):
 
 
 @user.route("/", methods=['GET'])
-@jwt_required(optional=True)
+@jwt_required()
 def get_list_authors():
     users = session.query(Users).all()
     users_schema = UserInfo(many=True)
@@ -99,7 +99,7 @@ def get_list_authors():
 
 
 @user.route("/<int:user_id>", methods=['GET'])
-@jwt_required(optional=True)
+@jwt_required()
 def get_authors(user_id):
     db_user = session.query(Users).filter_by(id=user_id).first()
     if not db_user:

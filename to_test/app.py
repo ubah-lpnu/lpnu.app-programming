@@ -1,14 +1,12 @@
 from flask import Flask
-from wsgiref.simple_server import make_server
 # from pages.user import user
 # from pages.note import note
-from pages.tag import tag
-from pages.user import user
-from pages.note import note
+from to_test.pages.tag import tag
+from to_test.pages.user import user
+from to_test.pages.note import note
 from blueprint import api_blueprint
 from flask_jwt_extended import (
-    JWTManager, jwt_required, create_access_token,
-    get_jwt_identity
+    JWTManager
 )
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'super-secret'

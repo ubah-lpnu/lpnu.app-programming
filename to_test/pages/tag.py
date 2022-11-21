@@ -1,11 +1,10 @@
 from flask import Blueprint, Response, request, jsonify
 from marshmallow import ValidationError
 from flask_bcrypt import Bcrypt
-from noteProgect.model_objects import Session, Tags, Users
-from noteProgect.validation_schemas import TagInfo
+from to_test.model_objects import Session, Tags, Users
+from to_test.validation_schemas import TagInfo
 from flask_jwt_extended import (
-    JWTManager, jwt_required, create_access_token,
-    get_jwt_identity
+    jwt_required, get_jwt_identity
 )
 
 tag = Blueprint('tag', __name__, url_prefix="/tag")
@@ -57,7 +56,7 @@ def update_tag(tag_id):
 
     exists = session.query(Tags.id).filter_by(name=data['name']).first()
     if exists:
-        return Response(status=400, response='Tag with such number already exists.')
+        return Response(status=400, response='Tag with such name already exists.')
     db_tag.name = data['name']
     session.commit()
 

@@ -1,15 +1,12 @@
 from flask import Blueprint, Response, request, jsonify
 from marshmallow import ValidationError
-from noteProgect.model_objects import Session, Notes, TagNote, Tags, Users, Editors
-from noteProgect.validation_schemas import NoteCreate, NoteUpdate, AllowNote, NoteInfo
+from to_test.model_objects import Session, Notes, TagNote, Tags, Users, Editors
+from to_test.validation_schemas import NoteCreate, NoteUpdate, AllowNote
 from sqlalchemy.exc import NoResultFound
 from datetime import datetime
 from flask_jwt_extended import (
-    JWTManager, jwt_required, create_access_token,
-    get_jwt_identity
+    jwt_required, get_jwt_identity
 )
-import json
-import pprint
 
 note = Blueprint('note', __name__, url_prefix='/note')
 session = Session()
@@ -30,7 +27,7 @@ def create_note():
 
     exist_title = session.query(Notes).filter_by(title=note['title']).first()
     if exist_title:
-        return Response(status=404, response='This title has already exist.')
+        return Response(status=400, response='This title has already exist.')
 
     tagInTable = []
     for item in note['tags']:
@@ -89,16 +86,21 @@ def update_note(note_update_id):
     if 'text' in note_update.keys():
         db_note.text = note_update['text']
     if 'tags' in note_update.keys():
+        existingTags = session.query(TagNote).filter(TagNote.note_id == note_update_id).all()
+        for tagnote in existingTags:
+            if {"name": session.query(Tags).filter(Tags.id == tagnote.tag_id).first().name} in note_update['tags']:
+                return jsonify({"message": "Can't use the same tag again"}), 400
+
         tagInTable = []
         for item in note_update['tags']:
             try:
                 session.query(Tags.id).filter(item['name'] == Tags.name).one()
             except NoResultFound:
-                return {"message": "Tag could not be found."}, 400
+                return {"message": "Tag could not be found."}, 404
             tagInTable.append(session.query(Tags.id).filter(item['name'] == Tags.name).scalar())
 
         if len(tagInTable) > len(set(tagInTable)):
-            return jsonify({"message": "The tag is already used"}), 400
+            return jsonify({"message": "Can't use the same tag again"}), 400
 
         try:
             for i in range(len(tagInTable)):
